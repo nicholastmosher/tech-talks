@@ -4,7 +4,7 @@ use std::fmt;
 enum NitriumError {
     RegisteringDevice,
     Heartbeat,
-    Io(std::io::Error),
+    FailedToReadProductKey(std::io::Error),
 }
 
 // The "Display" trait describes how to pretty-print a type, similar to Java's "Object.to_string()"
@@ -19,7 +19,9 @@ impl fmt::Display for NitriumError {
                 f,
                 "Encountered a problem when sending a heartbeat to Nitrium!"
             ),
-            NitriumError::Io(error) => write!(f, "Encountered an IO error: {}", error),
+            NitriumError::FailedToReadProductKey(ioe) => {
+                write!(f, "Failed to read the product key file: {}", ioe)
+            }
         }
     }
 }
@@ -30,14 +32,19 @@ impl fmt::Debug for NitriumError {
         match self {
             NitriumError::RegisteringDevice => f.debug_tuple("RegisteringDevice").finish(),
             NitriumError::Heartbeat => f.debug_tuple("Heartbeat").finish(),
-            NitriumError::Io(e) => f.debug_tuple("Io").field(e).finish(),
+            NitriumError::FailedToReadProductKey(ioe) => {
+                f.debug_tuple("FailedToReadProductKey").field(ioe).finish()
+            }
         }
     }
 }
 
 fn main() {
-    let error = NitriumError::RegisteringDevice;
+    let error = NitriumError::FailedToReadProductKey(std::io::Error::new(
+        std::io::ErrorKind::NotFound,
+        "product key file not found",
+    ));
 
     println!("Nitrium Error Display: {}", error);
-    println!("Nitrium Error Debug: {:?}", error);
+    println!("Nitrium Error Debug: {:#?}", error);
 }
