@@ -1,3 +1,4 @@
+use std::fmt;
 use thiserror::Error;
 
 // In Rust, most error types are an "enum" with variants describing error scenarios
