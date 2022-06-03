@@ -9,7 +9,7 @@ enum NitriumError {
     #[error("Encountered a problem when sending a heartbeat to Nitrium!")]
     Heartbeat,
     #[error("Failed to read hte product key file: {0}")]
-    FailedToReadProductKey(std::io::Error),
+    FailedToReadProductKey(#[from] std::io::Error),
 }
 
 fn main() {
